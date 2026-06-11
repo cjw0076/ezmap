@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">192.168.0.240</domain>
+        <domain includeSubdomains="true">52.79.105.63</domain>
+        <domain includeSubdomains="true">opinet.co.kr</domain>
+        <!-- 공공데이터포털: 날씨·미세먼지·충전소·주차장·약국·병원·도로위험·과속카메라 (HTTP only) -->
+        <domain includeSubdomains="true">apis.data.go.kr</domain>
+        <domain includeSubdomains="true">data.go.kr</domain>
+    </domain-config>
+</network-security-config>

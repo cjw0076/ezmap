@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "name": "EZmap",
+  "description": "Android용 AI 내비게이션 및 모빌리티 에이전트. 경로 안내, 장소 검색, 날씨, 주유소, 대중교통 등 25개 툴 제공.",
+  "url": "https://github.com/newworld2913-creator/EZmap",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "push_notifications": false,
+    "state_transition_history": false
+  },
+  "authentication": { "schemes": ["local-trust"] },
+  "skills": [
+    {
+      "id": "navigation",
+      "name": "경로 안내",
+      "description": "자동차/대중교통 경로 계산",
+      "examples": ["서울에서 부산까지 경로 계산해줘", "판교역까지 대중교통으로 얼마나 걸려?"]
+    },
+    {
+      "id": "places",
+      "name": "장소 검색",
+      "description": "주변 식당, 주유소, 병원 등 검색",
+      "examples": ["근처 주유소 찾아줘", "강남역 근처 맥도날드"]
+    },
+    {
+      "id": "weather",
+      "name": "날씨",
+      "description": "현재 날씨 및 예보",
+      "examples": ["오늘 날씨 어때", "내일 비 와?"]
+    }
+  ],
+  "default_input_mode": "text",
+  "supported_output_modes": ["text", "json"]
+}

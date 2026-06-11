@@ -1,0 +1,31 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# 릴리즈 서명 (절대 커밋 금지)
+key.properties
+*.jks
+*.keystore
+
+# Vosk 디코딩 그래프 — 173MB(GitHub 100MB 한도 초과). 디스크/제출엔 포함, git 제외.
+app/src/main/assets/vosk-model-small-ko/graph/HCLr.fst
+
+# secrets
+keys.properties
+local.properties
+*.jks
+*.keystore
+*.pem
+.kotlin/

@@ -1,0 +1,284 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-12",
+  "description": "EZmap 자기학습 에이전트 스켈레톤 템플릿. SELF_LEARNING_AGENT.md §10.2 결정 4 구현. 사용자 첫 발화 매칭 시 2회 반복 조건 면제하여 즉시 LearnedSkill 생성.",
+  "_slotSyntax": {
+    "description": "toolChain.params 값에서 사용하는 슬롯 치환 규칙",
+    "rules": {
+      "$SLOT.name": "발화에서 추출된 slot 값 (예: $POI, $PERSON, $DEST)",
+      "$PROFILE.home": "사용자 프로필 집 좌표/주소 (ProfileDao 조회)",
+      "$PROFILE.work": "사용자 프로필 회사 좌표/주소",
+      "$GPS.current": "현재 GPS 좌표 (AgentContext)",
+      "$TIME.today": "오늘 날짜 ISO",
+      "$TIME.tomorrow": "내일 날짜 ISO"
+    }
+  },
+  "_slotTypes": {
+    "POI": "장소명 (스타벅스, 맥도날드). search_places로 좌표 해석",
+    "PLACE_REF": "집/회사/학교 등 프로필 참조. ProfileDao로 해석",
+    "PERSON": "연락처 이름. ContactDao로 해석",
+    "TIME": "시간 표현 (30분 뒤, 오후 3시)",
+    "CATEGORY": "카테고리 (카페, 주유소, 편의점)",
+    "ROUTE_PREF": "경로 선호 (빠른 길, 안 막히는 길)"
+  },
+  "_riskTierDefinition": {
+    "SAFE": "정보 조회형. 부작용 없음. confidence 임계 0.75",
+    "STATEFUL": "상태 변경형(경로 시작, 일정 등록). confidence 임계 0.85",
+    "EFFECTFUL": "부작용 큰 것(전화, 메시지). LearnedSkill 생성 금지 — 이 템플릿 리스트에 포함되면 안 됨"
+  },
+  "templates": [
+    {
+      "id": "template.commute_work",
+      "version": 1,
+      "intent": "NAVIGATE_WORK",
+      "fingerprint": "출근",
+      "canonicalUtterance": "회사 가자",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_directions", "params": { "origin": "$GPS.current", "destination": "$PROFILE.work" } }
+      ],
+      "replyTemplate": "회사로 안내 시작할게요.",
+      "ttsTemplate": "회사로 안내 시작합니다.",
+      "maxToolRiskTier": "STATEFUL",
+      "sensitivity": "PERSONAL",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.commute_home",
+      "version": 1,
+      "intent": "NAVIGATE_HOME",
+      "fingerprint": "귀가",
+      "canonicalUtterance": "집 가자",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_directions", "params": { "origin": "$GPS.current", "destination": "$PROFILE.home" } }
+      ],
+      "replyTemplate": "집으로 안내 시작할게요.",
+      "ttsTemplate": "집으로 안내 시작합니다.",
+      "maxToolRiskTier": "STATEFUL",
+      "sensitivity": "SENSITIVE",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.visit_on_way",
+      "version": 1,
+      "intent": "ROUTE_WITH_STOPOVER",
+      "fingerprint": "{POI} 들렀다 {PLACE_REF}",
+      "canonicalUtterance": "스타벅스 들렀다가 회사",
+      "slotSchema": [
+        { "name": "POI", "type": "POI" },
+        { "name": "PLACE_REF", "type": "PLACE_REF" }
+      ],
+      "toolChain": [
+        { "tool": "search_places", "params": { "query": "$POI", "x": "$GPS.current.x", "y": "$GPS.current.y" } },
+        { "tool": "get_directions", "params": { "origin": "$GPS.current", "waypoint": "$POI", "destination": "$PLACE_REF" } }
+      ],
+      "replyTemplate": "{PLACE_REF}로 가는 길에 {POI} 들를게요.",
+      "ttsTemplate": "{PLACE_REF} 가는 길에 {POI} 들릅니다.",
+      "maxToolRiskTier": "STATEFUL",
+      "sensitivity": "PERSONAL",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_category_nearby",
+      "version": 1,
+      "intent": "SEARCH_NEARBY",
+      "fingerprint": "근처 {CATEGORY}",
+      "canonicalUtterance": "근처 카페 찾아줘",
+      "slotSchema": [
+        { "name": "CATEGORY", "type": "CATEGORY" }
+      ],
+      "toolChain": [
+        { "tool": "search_places", "params": { "query": "$CATEGORY", "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 1500 } }
+      ],
+      "replyTemplate": "근처 {CATEGORY} 찾아봤어요.",
+      "ttsTemplate": "근처 {CATEGORY} 찾았습니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.schedule_today",
+      "version": 1,
+      "intent": "VIEW_SCHEDULE",
+      "fingerprint": "오늘 일정",
+      "canonicalUtterance": "오늘 일정 뭐 있어",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_schedule", "params": { "date": "$TIME.today" } }
+      ],
+      "replyTemplate": "오늘 일정 알려드릴게요.",
+      "ttsTemplate": "오늘 일정입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PERSONAL",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.compare_routes",
+      "version": 1,
+      "intent": "COMPARE_ROUTES",
+      "fingerprint": "{PLACE_REF} {ROUTE_PREF}",
+      "canonicalUtterance": "회사 빠른 길",
+      "slotSchema": [
+        { "name": "PLACE_REF", "type": "PLACE_REF" },
+        { "name": "ROUTE_PREF", "type": "ROUTE_PREF" }
+      ],
+      "toolChain": [
+        { "tool": "get_directions", "params": { "origin": "$GPS.current", "destination": "$PLACE_REF", "preference": "$ROUTE_PREF" } },
+        { "tool": "get_directions_naver", "params": { "origin": "$GPS.current", "destination": "$PLACE_REF", "preference": "$ROUTE_PREF" } }
+      ],
+      "replyTemplate": "{PLACE_REF}까지 경로 비교해드릴게요.",
+      "ttsTemplate": "{PLACE_REF} 경로를 비교합니다.",
+      "maxToolRiskTier": "STATEFUL",
+      "sensitivity": "PERSONAL",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.weather_now",
+      "version": 1,
+      "intent": "CHECK_WEATHER",
+      "fingerprint": "날씨",
+      "canonicalUtterance": "날씨 어때",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_weather_kma", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y" } }
+      ],
+      "replyTemplate": "지금 날씨 알려드릴게요.",
+      "ttsTemplate": "현재 날씨입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_gas",
+      "version": 1,
+      "intent": "FIND_GAS",
+      "fingerprint": "주유소",
+      "canonicalUtterance": "주유소 찾아줘",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_gas_stations", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 3000 } }
+      ],
+      "replyTemplate": "근처 주유소 가격순으로 보여드릴게요.",
+      "ttsTemplate": "근처 주유소입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_ev_charger",
+      "version": 1,
+      "intent": "FIND_EV_CHARGER",
+      "fingerprint": "충전소",
+      "canonicalUtterance": "전기차 충전소 찾아줘",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_ev_chargers", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 3000 } }
+      ],
+      "replyTemplate": "근처 전기차 충전소 보여드릴게요.",
+      "ttsTemplate": "근처 충전소입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_parking",
+      "version": 1,
+      "intent": "FIND_PARKING",
+      "fingerprint": "주차",
+      "canonicalUtterance": "주차장 찾아줘",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_parking", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 500 } }
+      ],
+      "replyTemplate": "근처 주차장 보여드릴게요.",
+      "ttsTemplate": "근처 주차장입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.report_incident",
+      "version": 1,
+      "intent": "REPORT_INCIDENT",
+      "fingerprint": "사고 정체",
+      "canonicalUtterance": "앞에 사고 났어",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_traffic_incidents", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 5000 } },
+        { "tool": "get_road_incidents", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 5000 } }
+      ],
+      "replyTemplate": "주변 교통 상황 확인해드릴게요.",
+      "ttsTemplate": "주변 교통 상황입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_rest_area",
+      "version": 1,
+      "intent": "FIND_REST_AREA",
+      "fingerprint": "휴게소",
+      "canonicalUtterance": "가까운 휴게소",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "get_rest_areas", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "radius": 30000 } }
+      ],
+      "replyTemplate": "가까운 휴게소 알려드릴게요.",
+      "ttsTemplate": "가까운 휴게소입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "PUBLIC",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_hospital",
+      "version": 1,
+      "intent": "FIND_HOSPITAL",
+      "fingerprint": "병원 응급실",
+      "canonicalUtterance": "근처 응급실 찾아줘",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "search_hospitals", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y", "emergency": true } }
+      ],
+      "replyTemplate": "근처 응급실 보여드릴게요.",
+      "ttsTemplate": "근처 응급실입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "SENSITIVE",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.find_pharmacy",
+      "version": 1,
+      "intent": "FIND_PHARMACY",
+      "fingerprint": "약국",
+      "canonicalUtterance": "근처 약국",
+      "slotSchema": [],
+      "toolChain": [
+        { "tool": "search_pharmacies", "params": { "x": "$GPS.current.x", "y": "$GPS.current.y" } }
+      ],
+      "replyTemplate": "근처 약국 보여드릴게요.",
+      "ttsTemplate": "근처 약국입니다.",
+      "maxToolRiskTier": "SAFE",
+      "sensitivity": "SENSITIVE",
+      "initialConfidence": 0.80
+    },
+    {
+      "id": "template.save_favorite",
+      "version": 1,
+      "intent": "MANAGE_FAVORITE",
+      "fingerprint": "즐겨찾기 {POI}",
+      "canonicalUtterance": "여기 즐겨찾기에 추가해줘",
+      "slotSchema": [
+        { "name": "POI", "type": "POI" }
+      ],
+      "toolChain": [
+        { "tool": "manage_favorites", "params": { "action": "add", "name": "$POI", "x": "$GPS.current.x", "y": "$GPS.current.y" } }
+      ],
+      "replyTemplate": "{POI} 즐겨찾기에 추가했어요.",
+      "ttsTemplate": "{POI} 즐겨찾기에 추가했습니다.",
+      "maxToolRiskTier": "STATEFUL",
+      "sensitivity": "PERSONAL",
+      "initialConfidence": 0.80
+    }
+  ]
+}

@@ -1,0 +1,258 @@
+[
+  {
+    "id": "commute_normal",
+    "description": "평일 출근 — 기본 경로 탐색",
+    "input": "회사 가야 해",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "실패"]
+  },
+  {
+    "id": "commute_rainy",
+    "description": "비 오는 출근 — 날씨+경로 체이닝",
+    "input": "오늘 비 오는데 회사 가는 길 알려줘",
+    "expectedTools": ["get_weather", "get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "실패"]
+  },
+  {
+    "id": "commute_traffic",
+    "description": "정체 퇴근 — 교통 반영 경로",
+    "input": "퇴근하려는데 지금 막혀? 빠른 길로 가줘",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "실패"]
+  },
+  {
+    "id": "commute_late",
+    "description": "야근 귀가 — 심야 집 경로",
+    "input": "집 가자",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "실패"]
+  },
+  {
+    "id": "weather_rain",
+    "description": "비 예보 조회",
+    "input": "오늘 비 와?",
+    "expectedTools": ["get_weather"],
+    "requiredKeywords": ["비", "강수"],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "weather_snow",
+    "description": "폭설 경보 중 안전 경고 포함",
+    "input": "지금 눈 많이 와? 운전해도 돼?",
+    "expectedTools": ["get_weather"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "weather_heat",
+    "description": "폭염+도보 — 수분 보충 권고",
+    "input": "지금 걸어가도 돼? 덥지 않아?",
+    "expectedTools": ["get_weather"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "calendar_urgent",
+    "description": "일정 30분 전 — 출발 시간 역산",
+    "input": "30분 뒤 회의인데 지금 출발하면 돼?",
+    "expectedTools": ["get_schedule", "get_future_eta"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "calendar_chain",
+    "description": "연속 일정 A→B→C — 경유 경로",
+    "input": "오늘 일정 보고 이동 계획 세워줘",
+    "expectedTools": ["get_schedule", "get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "calendar_cancel",
+    "description": "일정 취소 후 재계획",
+    "input": "3시 약속 취소됐어. 근처에서 뭐 할 수 있어?",
+    "expectedTools": ["search_places"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "gps_tunnel",
+    "description": "GPS 오차 상황 — 디그레이드 모드",
+    "input": "지금 어디야? 길 안내해줘",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "gps_underground",
+    "description": "지하 주차장 — GPS 불안정 안내",
+    "input": "주차장 들어왔는데 어떻게 나가?",
+    "expectedTools": [],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "safety_highway",
+    "description": "고속 주행 중 — 음성만, 복잡한 UI 차단",
+    "input": "고속도로 달리는 중인데 맛집 추천해줘",
+    "expectedTools": [],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "safety_battery",
+    "description": "배터리 5% + 내비 — 절전 알림",
+    "input": "배터리 얼마 안 남았는데 계속 안내해줘",
+    "expectedTools": [],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "safety_uncertain",
+    "description": "확신 낮은 추천 — 확인 요청",
+    "input": "어디로 가야 할지 잘 모르겠어, 알아서 결정해줘",
+    "expectedTools": [],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "safety_storm",
+    "description": "악천후+야간+고속 — 최대 보수적 응답",
+    "input": "태풍인데 지금 고속도로 타야 해?",
+    "expectedTools": ["get_weather"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "memory_place",
+    "description": "이전 대화 장소 참조 해결",
+    "input": "아까 그 식당으로 안내해줘",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "모르겠"]
+  },
+  {
+    "id": "memory_route",
+    "description": "이전 경로 히스토리 참조",
+    "input": "지난번 경로로 다시 안내해줘",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "proactive_depart",
+    "description": "일정 임박 — 출발 알림 수락",
+    "input": "지금 출발해야 해?",
+    "expectedTools": ["get_schedule", "get_future_eta"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "proactive_weather",
+    "description": "비 시작 30분 전 — 날씨 알림",
+    "input": "우산 가져가야 해?",
+    "expectedTools": ["get_weather"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error"]
+  },
+  {
+    "id": "info_weather_now",
+    "description": "현재 날씨 조회 (기상청 실황)",
+    "input": "날씨 어때?",
+    "expectedTools": ["get_weather_kma"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "실패", "crash"]
+  },
+  {
+    "id": "info_airquality",
+    "description": "미세먼지/대기질 조회",
+    "input": "지금 미세먼지 어때?",
+    "expectedTools": ["get_air_quality"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "info_exchange",
+    "description": "환율 조회 — 읽기 쉬운 방향(1달러=원)",
+    "input": "1달러 얼마야?",
+    "expectedTools": ["get_exchange_rate"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "info_knowledge",
+    "description": "일반 지식 질의 (위키)",
+    "input": "에펠탑이 뭐야?",
+    "expectedTools": ["search_knowledge"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "places_gas",
+    "description": "근처 주유소 검색 → show_places",
+    "input": "근처 주유소 알려줘",
+    "expectedTools": ["get_gas_stations"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "places_pharmacy",
+    "description": "근처 약국 검색 → show_places",
+    "input": "근처 약국 찾아줘",
+    "expectedTools": ["search_pharmacies"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "places_category_brand",
+    "description": "지역+브랜드 장소 검색",
+    "input": "강남 스타벅스 찾아줘",
+    "expectedTools": ["search_places"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "message_send",
+    "description": "연락처 해결 후 메시지 초안 — JSON 실패에도 확인 카드 확정 복구",
+    "input": "엄마한테 곧 도착한다고 문자 보내줘",
+    "expectedTools": ["manage_contacts", "send_message"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "call_request",
+    "description": "연락처로 통화 요청 → show_call 확인 카드",
+    "input": "아빠한테 전화해줘",
+    "expectedTools": ["make_call"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "nav_departure_oneshot",
+    "description": "한 문장 즉시 출발 — start_navigation 자동 진입",
+    "input": "강남역으로 안내 시작",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  },
+  {
+    "id": "nav_reroute",
+    "description": "주행 중 재탐색 — 목적지 재질문 없이 새 경로",
+    "input": "더 빠른 길로 다시 안내해줘",
+    "expectedTools": ["get_directions"],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "목적지가 어디", "crash"]
+  },
+  {
+    "id": "screen_contacts",
+    "description": "음성 화면 이동 — 연락처 (tool 없는 navigate_screen)",
+    "input": "연락처 보여줘",
+    "expectedTools": [],
+    "requiredKeywords": [],
+    "forbiddenKeywords": ["오류", "error", "crash"]
+  }
+]

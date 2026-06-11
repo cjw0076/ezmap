@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 전체 화면 지도 -->
+    <com.kakao.vectormap.MapView
+        android:id="@+id/agentMapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- 상단: 설정 기어 아이콘 -->
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_settings_circle"
+        android:contentDescription="설정"
+        android:elevation="4dp"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_settings" />
+
+    <!-- 상단: 내비게이션 HUD (기본 숨김) -->
+    <include
+        android:id="@+id/navHud"
+        layout="@layout/overlay_navigation_hud"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:visibility="gone" />
+
+    <!-- 경로 선택 카드 캐러셀 (기본 숨김, conversationSheet 위에 앵커) -->
+    <LinearLayout
+        android:id="@+id/routeCarouselContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="#FFFFFFFF"
+        android:elevation="4dp"
+        app:layout_anchor="@id/conversationSheet"
+        app:layout_anchorGravity="top">
+
+        <TextView
+            android:id="@+id/tvRouteHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="← 경로를 선택하세요 →"
+            android:textSize="12sp"
+            android:textColor="#888888"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/routeCardRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:clipToPadding="false"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp" />
+
+        <Button
+            android:id="@+id/btnStartNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="이 경로로 출발"
+            android:backgroundTint="@color/main_color" />
+
+    </LinearLayout>
+
+    <!-- 에이전트 말풍선 (기본 숨김) -->
+    <include
+        android:id="@+id/agentBubble"
+        layout="@layout/card_agent_bubble"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="160dp"
+        android:visibility="gone" />
+
+    <!-- 동적 카드 컨테이너 (Jarvis-like) -->
+    <FrameLayout
+        android:id="@+id/dynamicCardContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="160dp"
+        android:elevation="8dp"
+        android:visibility="gone" />
+
+    <!-- 음성 녹음 상태 표시 -->
+    <TextView
+        android:id="@+id/tvVoiceStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginBottom="180dp"
+        android:background="@drawable/bg_voice_status"
+        android:elevation="8dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp"
+        android:text="듣고 있어요..."
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <!-- 마이크 FAB (80dp, 하단 중앙 — 주요 CTA) -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMic"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="100dp"
+        android:contentDescription="음성 입력"
+        android:src="@drawable/ic_mic"
+        app:backgroundTint="@color/main_color"
+        app:elevation="6dp"
+        app:fabCustomSize="80dp"
+        app:maxImageSize="36dp"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Fab.Circle"
+        app:tint="@color/white" />
+
+    <!-- 하단 대화 시트 -->
+    <LinearLayout
+        android:id="@+id/conversationSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_bottom_sheet"
+        android:orientation="vertical"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="80dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <!-- 드래그 핸들 -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_drag_handle" />
+
+        <!-- 입력바 (항상 보임 - peek height에 포함) -->
+        <LinearLayout
+            android:id="@+id/inputBar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etMessage"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_chat_input"
+                android:hint="무엇이든 물어보세요..."
+                android:imeOptions="actionSend"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingHorizontal="16dp"
+                android:textColor="#333333"
+                android:textColorHint="#999999"
+                android:textSize="14sp" />
+
+            <ImageButton
+                android:id="@+id/btnSend"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="전송"
+                android:src="@drawable/ic_send"
+                app:tint="@color/main_color" />
+        </LinearLayout>
+
+        <!-- 대화 메시지 영역 (시트 확장 시 보임) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvConversation"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp" />
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

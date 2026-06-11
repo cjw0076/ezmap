@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="240dp"
+        android:layout_height="140dp"
+        android:background="@drawable/bg_route_card"
+        android:gravity="center"
+        android:padding="14dp"
+        android:layout_gravity="center"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/tvRouteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Route 1"
+            android:textColor="#080D63"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tvRouteInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6분   5.4km"
+            android:textSize="14sp"
+            android:textColor="#333"
+            android:layout_marginBottom="4dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tvRouteScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="score: 5.5/10"
+            android:textSize="14sp"
+            android:textColor="#555"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/tvRouteExplanation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Explanation..."
+            android:textSize="11sp"
+            android:textColor="#666"
+            android:layout_marginTop="6dp"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+</FrameLayout>

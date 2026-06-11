@@ -1,0 +1,16 @@
+# Copy this file to android/local.properties, then fill values needed for local runs.
+# Android Studio may manage sdk.dir automatically.
+
+# sdk.dir=C\:\\Users\\<USER>\\AppData\\Local\\Android\\Sdk
+
+GEMINI_API_KEY=
+KAKAO_REST_KEY=
+KAKAO_NATIVE_APP_KEY=
+KMA_API_KEY=
+OPINET_API_KEY=
+NAVER_CLIENT_ID=
+NAVER_CLIENT_SECRET=
+NAVER_MAP_CLIENT_ID=
+NAVER_MAP_CLIENT_SECRET=
+ODSAY_API_KEY=
+PORCUPINE_ACCESS_KEY=
